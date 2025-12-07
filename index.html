@@ -3,26 +3,26 @@
 <head>
 <meta charset="UTF-8">
 <title>Nexus AI - Geography Chat</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <style>
-html, body {
+body {
+    font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
-    height: 100%;
-    font-family: Arial, sans-serif;
     background: #f6f6f6;
-    overflow: hidden; /* cegah body scroll */
     display: flex;
     flex-direction: column;
+    height: 100vh;
 }
 
 #chatContainer {
     flex: 1;
-    overflow-y: auto;
     padding: 20px;
+    overflow-y: auto;
     display: flex;
     flex-direction: column;
     gap: 10px;
+    transition: padding-bottom 0.3s ease;
 }
 
 .message {
@@ -47,14 +47,11 @@ html, body {
 }
 
 #inputBar {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
     display: flex;
     padding: 10px;
     background: #fff;
     border-top: 1px solid #ccc;
+    transition: transform 0.3s ease;
 }
 
 #inputBar input {
@@ -88,7 +85,7 @@ html, body {
 </div>
 
 <script>
-// 50 negara + Niger easter egg
+// Countries data (50 negara)
 const countries = {
   "USA":{"capital":"Washington, D.C.","leader":"Joe Biden","independence":"4 July 1776","gdpPerCapita":"$76,000","population":"331 million","area":"9,833,520 km²","language":"English","currency":"USD"},
   "China":{"capital":"Beijing","leader":"Xi Jinping","independence":"1 October 1949","gdpPerCapita":"$12,556","population":"1.4 billion","area":"9,596,961 km²","language":"Mandarin","currency":"Renminbi"},
@@ -134,7 +131,7 @@ const countries = {
   "Portugal":{"capital":"Lisbon","leader":"Marcelo Rebelo de Sousa","independence":"5 October 1143","gdpPerCapita":"$23,207","population":"10.3 million","area":"92,090 km²","language":"Portuguese","currency":"EUR"}
 };
 
-// Parser & sendMessage
+// Parser
 function parseQuestion(input){
     input = input.toLowerCase().replace(/[?.!]/g,'');
     let country = null;
@@ -145,6 +142,7 @@ function parseQuestion(input){
         }
     }
     if(!country) return "I don't understand the country.";
+
     if((input.includes("when")||input.includes("date")||input.includes("independence")) && input.includes("independence")){
         return `${country} became independent on ${countries[country].independence}.`;
     }
@@ -175,6 +173,7 @@ function parseQuestion(input){
     return "I don't understand your question.";
 }
 
+// Kirim message
 function sendMessage(){
     const input = document.getElementById("userInput");
     const text = input.value.trim();
@@ -196,17 +195,21 @@ function sendMessage(){
     input.value = "";
 }
 
-// Resize chat on mobile keyboard
-window.addEventListener('resize', () => {
-    const chat = document.getElementById('chatContainer');
+// Keyboard mobile - naikkan chat dengan animasi
+function handleKeyboard() {
     const inputBar = document.getElementById('inputBar');
-    chat.style.height = (window.innerHeight - inputBar.offsetHeight) + 'px';
-});
+    const chat = document.getElementById('chatContainer');
+    let originalHeight = window.innerHeight;
 
-// Prevent zoom on Ctrl+wheel
-document.getElementById('userInput').addEventListener('wheel', function(e){
-    if(e.ctrlKey) e.preventDefault();
-}, { passive: false });
+    window.addEventListener('resize', () => {
+        const newHeight = window.innerHeight;
+        const diff = originalHeight - newHeight;
+        inputBar.style.transform = diff > 0 ? `translateY(-${diff}px)` : `translateY(0px)`;
+        chat.style.paddingBottom = `${inputBar.offsetHeight + (diff>0?diff:0)}px`;
+        chat.scrollTop = chat.scrollHeight;
+    });
+}
+handleKeyboard();
 </script>
 
 </body>
