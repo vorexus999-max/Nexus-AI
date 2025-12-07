@@ -51,7 +51,6 @@ let countries = {
   "Bangladesh":{"capital":"Dhaka","leader":"Abdul Hamid","independence":"26 March 1971","gdpPerCapita":"$2,554","population":"166 million","area":"147,570 km²","language":"Bengali","currency":"BDT"},
   "Egypt":{"capital":"Cairo","leader":"Abdel Fattah el-Sisi","independence":"28 February 1922","gdpPerCapita":"$3,888","population":"102 million","area":"1,010,408 km²","language":"Arabic","currency":"EGP"},
   "South Africa":{"capital":"Pretoria","leader":"Cyril Ramaphosa","independence":"31 May 1910 (Union formation)","gdpPerCapita":"$6,374","population":"60 million","area":"1,221,037 km²","language":"Zulu, Xhosa, English","currency":"ZAR"},
-  "Niger":{"capital":"Niamey","leader":"Mohamed Bazoum","independence":"3 August 1960","gdpPerCapita":"$567","population":"25 million","area":"1,267,000 km²","language":"French","currency":"XOF"},
   "Morocco":{"capital":"Rabat","leader":"Mohammed VI","independence":"2 March 1956","gdpPerCapita":"$3,183","population":"36 million","area":"446,550 km²","language":"Arabic, Berber","currency":"MAD"},
   "Ethiopia":{"capital":"Addis Ababa","leader":"Sahle-Work Zewde","independence":"28 May 1991 (Derg fall)","gdpPerCapita":"$1,149","population":"117 million","area":"1,104,300 km²","language":"Amharic","currency":"ETB"},
   "Thailand":{"capital":"Bangkok","leader":"Prayut Chan-o-cha","independence":"5 December 1932","gdpPerCapita":"$7,189","population":"70 million","area":"513,120 km²","language":"Thai","currency":"THB"},
@@ -59,7 +58,7 @@ let countries = {
   "Philippines":{"capital":"Manila","leader":"Ferdinand Marcos Jr.","independence":"12 June 1898","gdpPerCapita":"$3,485","population":"113 million","area":"300,000 km²","language":"Filipino, English","currency":"PHP"},
   "Malaysia":{"capital":"Kuala Lumpur","leader":"Anwar Ibrahim","independence":"31 August 1957","gdpPerCapita":"$11,415","population":"33 million","area":"330,803 km²","language":"Malay","currency":"MYR"},
   "Singapore":{"capital":"Singapore","leader":"Halimah Yacob","independence":"9 August 1965","gdpPerCapita":"$72,794","population":"5.7 million","area":"728.6 km²","language":"English, Malay, Mandarin, Tamil","currency":"SGD"},
-  "Italy2":{"capital":"Rome","leader":"Sergio Mattarella","independence":"17 March 1861","gdpPerCapita":"$34,777","population":"60 million","area":"301,340 km²","language":"Italian","currency":"Euro"},
+  "Niger":{"capital":"Niamey","leader":"Mohamed Bazoum","independence":"3 August 1960","gdpPerCapita":"$567","population":"25 million","area":"1,267,000 km²","language":"French","currency":"XOF"},
   "Greece":{"capital":"Athens","leader":"Katerina Sakellaropoulou","independence":"25 March 1821","gdpPerCapita":"$20,291","population":"10.7 million","area":"131,957 km²","language":"Greek","currency":"EUR"},
   "Netherlands":{"capital":"Amsterdam","leader":"Mark Rutte","independence":"26 July 1581","gdpPerCapita":"$58,341","population":"17 million","area":"41,543 km²","language":"Dutch","currency":"EUR"},
   "Belgium":{"capital":"Brussels","leader":"Philippe","independence":"4 October 1830","gdpPerCapita":"$50,274","population":"11.5 million","area":"30,528 km²","language":"Dutch, French, German","currency":"EUR"},
@@ -80,7 +79,7 @@ const smallTalk = [
 "Greetings! Curious about some country stats?"
 ];
 
-// Parser fleksibel
+// Parser fleksibel dengan easter egg untuk Niger
 function parseQuestion(input){
 input = input.toLowerCase().replace(/[?.!]/g,'');
 let country=null;
@@ -97,9 +96,12 @@ return `${country} became independent on ${countries[country].independence}.`;
 if(input.includes("capital")||input.includes("city")){
 return `${country}'s capital is ${countries[country].capital}.`;
 }
-// leader
+// leader dengan easter egg Niger
 if(input.includes("leader")||input.includes("president")||input.includes("prime minister")||input.includes("king")||input.includes("queen")){
-return `The leader of ${country} is ${countries[country].leader}.`;
+    if(country === "Niger"){
+        return "The answer is Lanang Damar!, haha just kidding the correct one is Mohamed Bazoum.";
+    }
+    return `The leader of ${country} is ${countries[country].leader}.`;
 }
 // GDP
 if(input.includes("gdp")||input.includes("economy")){
