@@ -6,19 +6,18 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <style>
 body { font-family: Arial, sans-serif; margin:0; padding:0; background:#0b0c10; color:#c5c6c7; }
-#terminal { padding:20px; height:85vh; overflow-y:auto; white-space:pre-wrap; background:#1f2833; font-size:18px; }
-#inputBar { width:100%; position:fixed; bottom:0; left:0; background:#0b0c10; padding:15px; border-top:1px solid #45a29e; }
-#inputBar input { width:95%; background:#0b0c10; border:none; outline:none; color:#66fcf1; font-size:20px; height:45px; border-radius:8px; padding:5px; }
-.user { color:#66fcf1; font-size:18px; }
-.nexus { color:#45a29e; font-size:18px; }
+#terminal { padding:20px; height:85vh; overflow-y:auto; background:#1f2833; font-size:16px; line-height:1.5; display:flex; flex-direction:column; gap:10px; }
+.message { padding:8px 12px; border-radius:12px; max-width:80%; word-wrap:break-word; }
+.user { background:#0b0c10; color:#66fcf1; align-self:flex-end; }
+.nexus { background:#45a29e; color:#0b0c10; align-self:flex-start; }
+#inputBar { width:100%; position:fixed; bottom:0; left:0; background:#0b0c10; padding:10px 15px; border-top:1px solid #45a29e; display:flex; justify-content:center; }
+#inputBar input { width:100%; max-width:700px; background:#1f2833; border:none; outline:none; color:#66fcf1; font-size:16px; height:40px; border-radius:12px; padding:0 15px; }
 </style>
 </head>
 <body>
 
 <div id="terminal">
-NEXUS AI - GEOGRAPHY ONLINE  
-----------------------------------  
-Ask about countries, capitals, leaders, GDP, population, area, language, currency, independence.
+<div class="nexus message">NEXUS AI - GEOGRAPHY ONLINE<br>----------------------------------<br>Ask about countries, capitals, leaders, GDP, population, area, language, currency, independence.</div>
 </div>
 
 <div id="inputBar">
@@ -55,7 +54,7 @@ let countries = {
   "Vietnam": {"capital":"Hanoi","leader":"Vo Van Thuong","independence":"2 September 1945","gdpPerCapita":"$4,675","population":"98 million","area":"331,212 km²","language":"Vietnamese","currency":"VND"}
 };
 
-// Parser fleksibel dengan fallback "I don't understand"
+// Parser fleksibel
 function parseQuestion(input) {
     input = input.toLowerCase().replace(/[?.!]/g,'');
     let country = null;
@@ -91,11 +90,17 @@ function send() {
     const text = input.value.trim();
     if (!text) return;
 
-    box.innerHTML += `\n\n[user] >> ${text}`;
-    const reply = parseQuestion(text);
-    box.innerHTML += `\n[nexus] >> ${reply}`;
-    box.scrollTop = box.scrollHeight;
+    let userMsg = document.createElement("div");
+    userMsg.className = "user message";
+    userMsg.textContent = `[user] >> ${text}`;
+    box.appendChild(userMsg);
 
+    let reply = document.createElement("div");
+    reply.className = "nexus message";
+    reply.textContent = `[nexus] >> ${parseQuestion(text)}`;
+    box.appendChild(reply);
+
+    box.scrollTop = box.scrollHeight;
     input.value = "";
 }
 </script>
