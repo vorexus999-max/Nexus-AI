@@ -5,11 +5,14 @@
 <title>Nexus AI - Geography Chat</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <style>
+/* Ganti seluruh CSS Anda dengan ini untuk tampilan ChatGPT */
 body {
-    font-family: Arial, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background: #f6f6f6;
+    /* Latar belakang gelap seperti mode default ChatGPT */
+    background-color: #343541; 
+    color: #ececf1; /* Teks putih untuk kontras */
     display: flex;
     flex-direction: column;
     height: 100vh;
@@ -17,59 +20,101 @@ body {
 
 #chatContainer {
     flex: 1;
-    padding: 20px;
     overflow-y: auto;
+    /* Padding atas-bawah dan samping untuk memberi ruang */
+    padding: 20px 0; 
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    /* Lebar Kotak Chat Utama Diperbesar */
+    max-width: 900px; 
+    width: 100%;
+    margin: 0 auto;
 }
 
-.message {
-    max-width: 70%;
-    padding: 10px 15px;
-    border-radius: 15px;
+.messageContainer {
+    display: flex;
+    padding: 15px 20px;
+    align-items: flex-start;
+}
+
+.userContainer {
+    background-color: #343541; /* Sama dengan body, agar hanya input yang menonjol */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.botContainer {
+    background-color: #444654; /* Warna sedikit lebih terang untuk pesan bot */
+}
+
+.messageContent {
+    /* Lebar Pesan Diperbesar */
+    max-width: 95%; 
+    padding: 0;
     word-wrap: break-word;
+    line-height: 1.5;
+    white-space: pre-wrap; /* Penting untuk format teks yang baik */
 }
 
-.userMessage {
-    background: #007aff;
-    color: white;
-    align-self: flex-end;
-    border-bottom-right-radius: 0;
+/* Gaya khusus untuk pesan pengguna dan bot agar sejajar dengan ikon/avatar */
+.userContainer .messageContent {
+    margin-left: 20px;
+}
+.botContainer .messageContent {
+    margin-left: 20px; 
 }
 
-.botMessage {
-    background: #e5e5ea;
-    color: #000;
-    align-self: flex-start;
-    border-bottom-left-radius: 0;
-}
 
 #inputBar {
     display: flex;
-    padding: 10px;
-    background: #fff;
-    border-top: 1px solid #ccc;
-}
-
-#inputBar input {
-    flex: 1;
-    padding: 10px;
-    font-size: 16px;
-    border-radius: 20px;
-    border: 1px solid #ccc;
-    outline: none;
-}
-
-#inputBar button {
-    margin-left: 10px;
+    justify-content: center;
     padding: 10px 20px;
+    background: #343541; /* Warna latar belakang input */
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.inputWrapper {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    /* Pastikan lebar wrapper input sesuai dengan container chat */
+    max-width: 900px; 
+    background-color: #40414f; /* Warna latar belakang kotak input */
+    border: 1px solid #5a5b67;
+    border-radius: 10px;
+    padding: 8px 15px; 
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+}
+
+#userInput {
+    flex: 1;
+    padding: 10px 0;
     font-size: 16px;
     border: none;
-    background: #007aff;
-    color: white;
-    border-radius: 20px;
+    background: none;
+    color: #ececf1;
+    outline: none;
+    resize: none; 
+}
+
+/* Tombol Kirim (Send) */
+#inputBar button {
+    margin-left: 10px;
+    width: 30px; 
+    height: 30px;
+    border: none;
+    background: #5a5b67;
+    color: #ececf1;
+    border-radius: 5px;
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    padding: 0;
+}
+
+#inputBar button:hover {
+    background: #6e7080;
 }
 </style>
 </head>
@@ -78,12 +123,14 @@ body {
 <div id="chatContainer"></div>
 
 <div id="inputBar">
-    <input id="userInput" type="text" placeholder="Ask a country..." onkeydown="if(event.key==='Enter') sendMessage()">
-    <button onclick="sendMessage()">Send</button>
+    <div class="inputWrapper">
+        <input id="userInput" type="text" placeholder="Ask a country..." onkeydown="if(event.key==='Enter') sendMessage()">
+        <button onclick="sendMessage()">⬆</button>
+    </div>
 </div>
 
 <script>
-// Countries data (50 negara sesuai HTML terakhir)
+// Data Negara (50 negara, sama seperti kode asli Anda)
 const countries = {
   "USA":{"capital":"Washington, D.C.","leader":"Joe Biden","independence":"4 July 1776","gdpPerCapita":"$76,000","population":"331 million","area":"9,833,520 km²","language":"English","currency":"USD"},
   "China":{"capital":"Beijing","leader":"Xi Jinping","independence":"1 October 1949","gdpPerCapita":"$12,556","population":"1.4 billion","area":"9,596,961 km²","language":"Mandarin","currency":"Renminbi"},
@@ -121,7 +168,7 @@ const countries = {
   "Netherlands":{"capital":"Amsterdam","leader":"Mark Rutte","independence":"26 July 1581","gdpPerCapita":"$58,341","population":"17 million","area":"41,543 km²","language":"Dutch","currency":"EUR"},
   "Belgium":{"capital":"Brussels","leader":"Philippe","independence":"4 October 1830","gdpPerCapita":"$50,274","population":"11.5 million","area":"30,528 km²","language":"Dutch, French, German","currency":"EUR"},
   "Sweden":{"capital":"Stockholm","leader":"Carl XVI Gustaf","independence":"6 June 1523","gdpPerCapita":"$57,963","population":"10 million","area":"450,295 km²","language":"Swedish","currency":"SEK"},
-  "Norway":{"capital":"Oslo","leader":"Harald V","independence":"7 June 1905","gdpPerCapita":"$89,741","population":"5.4 million","area":"385,207 km²","language":"Norwegian","currency":"NOK"},
+  "Norway":{"capital":"Oslo","leader":"Harald V","independence":"7 Juni 1905","gdpPerCapita":"$89,741","population":"5.4 million","area":"385,207 km²","language":"Norwegian","currency":"NOK"},
   "Finland":{"capital":"Helsinki","leader":"Sauli Niinistö","independence":"6 December 1917","gdpPerCapita":"$56,148","population":"5.5 million","area":"338,424 km²","language":"Finnish, Swedish","currency":"EUR"},
   "Denmark":{"capital":"Copenhagen","leader":"Margrethe II","independence":"10 July 958 (Kingdom formation)","gdpPerCapita":"$63,389","population":"5.8 million","area":"42,933 km²","language":"Danish","currency":"DKK"},
   "Switzerland":{"capital":"Bern","leader":"Alain Berset","independence":"1 August 1291","gdpPerCapita":"$86,850","population":"8.6 million","area":"41,285 km²","language":"German, French, Italian, Romansh","currency":"CHF"},
@@ -170,23 +217,53 @@ function parseQuestion(input){
     return "I don't understand your question.";
 }
 
+// Fungsi pembantu untuk membuat elemen pesan
+function createMessage(text, isUser) {
+    const chat = document.getElementById("chatContainer");
+    
+    // 1. Buat kontainer utama (messageContainer)
+    const messageDiv = document.createElement("div");
+    messageDiv.className = "messageContainer " + (isUser ? "userContainer" : "botContainer");
+
+    // 2. Buat elemen ikon placeholder
+    const iconDiv = document.createElement("div");
+    iconDiv.style.width = "20px";
+    iconDiv.style.height = "20px";
+    iconDiv.style.borderRadius = "3px";
+    iconDiv.style.backgroundColor = isUser ? "#19c37d" : "#5a5b67"; // Warna ikon/avatar
+    iconDiv.style.color = "white";
+    iconDiv.style.display = "flex";
+    iconDiv.style.alignItems = "center";
+    iconDiv.style.justifyContent = "center";
+    iconDiv.style.fontSize = "12px";
+    iconDiv.textContent = isUser ? "U" : "N"; // 'U' untuk User, 'N' untuk Nexus
+    
+    // 3. Buat konten pesan (messageContent)
+    const contentDiv = document.createElement("div");
+    contentDiv.className = "messageContent";
+    contentDiv.textContent = text;
+
+    // Tambahkan ikon dan konten ke kontainer
+    messageDiv.appendChild(iconDiv);
+    messageDiv.appendChild(contentDiv);
+    
+    chat.appendChild(messageDiv);
+}
+
+// Fungsi utama untuk mengirim pesan
 function sendMessage(){
     const input = document.getElementById("userInput");
     const text = input.value.trim();
     if(!text) return;
 
+    // Buat pesan pengguna
+    createMessage(text, true); // true = isUser
+
+    // Dapatkan dan buat pesan bot
+    const botText = parseQuestion(text);
+    createMessage(botText, false); // false = isBot
+    
     const chat = document.getElementById("chatContainer");
-
-    const userDiv = document.createElement("div");
-    userDiv.className = "message userMessage";
-    userDiv.textContent = text;
-    chat.appendChild(userDiv);
-
-    const botDiv = document.createElement("div");
-    botDiv.className = "message botMessage";
-    botDiv.textContent = parseQuestion(text);
-    chat.appendChild(botDiv);
-
     chat.scrollTop = chat.scrollHeight;
     input.value = "";
 }
