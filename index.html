@@ -2,100 +2,149 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Nexus AI - Ultimate 100 Countries</title>
+<title>Nexus AI - Geography</title>
 <style>
-body { margin:0; font-family:Arial,sans-serif; display:flex; flex-direction:column; height:100vh; background:#f5f5f5; }
-#header { background:#1f2937; color:#fff; padding:15px; text-align:center; font-size:22px; font-weight:bold; }
-#chatContainer { flex:1; padding:10px; overflow-y:auto; display:flex; flex-direction:column; gap:8px; }
-.bubble { max-width:70%; padding:12px 18px; border-radius:15px; word-wrap:break-word; line-height:1.5; opacity:0; animation:fadeIn 0.3s forwards; }
-@keyframes fadeIn { to{opacity:1;} }
-.userBubble { background:#007bff; color:#fff; align-self:flex-end; border-bottom-right-radius:0; }
-.nexusBubble { background:#e2e2e2; color:#000; align-self:flex-start; border-bottom-left-radius:0; }
-#inputBar { display:flex; padding:10px; background:#ddd; border-top:1px solid #ccc; }
-#userInput { flex:1; padding:10px; font-size:16px; border-radius:8px; border:1px solid #aaa; outline:none; }
-#sendBtn { margin-left:10px; padding:10px 15px; font-size:16px; border-radius:8px; border:none; background:#007bff; color:#fff; cursor:pointer; }
-#sendBtn:hover { background:#0056b3; }
-img.flag { width:40px; vertical-align:middle; margin-right:5px; }
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: #0b0c10;
+    color: #c5c6c7;
+}
+
+#terminal {
+    padding: 20px;
+    height: 90vh;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    background: #1f2833;
+}
+
+#inputBar {
+    width: 100%;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    background: #0b0c10;
+    padding: 10px;
+    border-top: 1px solid #45a29e;
+}
+
+#inputBar input {
+    width: 95%;
+    background: #0b0c10;
+    border: none;
+    outline: none;
+    color: #66fcf1;
+    font-size: 16px;
+    font-family: monospace;
+}
+.user { color:#66fcf1; }
+.nexus { color:#45a29e; }
 </style>
 </head>
 <body>
 
-<div id="header">Nexus AI - Ultimate 100 Countries</div>
-<div id="chatContainer"></div>
+<div id="terminal">
+NEXUS AI - GEOGRAPHY ONLINE  
+----------------------------------  
+Type your question about countries, capitals, leaders, GDP, population, etc.
+</div>
+
 <div id="inputBar">
-<input id="userInput" type="text" placeholder="Ask about countries, capitals, leaders, GDP, landmarks..." onkeydown="if(event.key==='Enter') send()">
-<button id="sendBtn" onclick="send()">Send</button>
+    <input id="userInput" type="text" placeholder=">>" onkeydown="if(event.key==='Enter') send()">
 </div>
 
 <script>
-let memory = [];
-let countriesDB = {};
-let smallTalkReplies = [
-  "Hello! How's your day going?",
-  "Hi! What are you up to today?",
-  "Hey there! I'm here to chat about geography or anything else you like.",
-  "Hello! Curious about any place in the world today?"
+// Load countries.json (for demo, we assume countries data is embedded)
+let countries = {}; // akan diisi dari countries.json atau embed data
+
+// Contoh minimal data, nanti bisa diganti dengan 100 negara lengkap
+countries["China"] = {
+    "capital": "Beijing",
+    "leader": "Xi Jinping",
+    "independence": "1 October 1949",
+    "gdpPerCapita": "$12,556",
+    "population": "1.4 billion",
+    "area": "9,596,961 km²",
+    "language": "Mandarin",
+    "currency": "Renminbi"
+};
+
+countries["USA"] = {
+    "capital": "Washington, D.C.",
+    "leader": "Joe Biden",
+    "independence": "4 July 1776",
+    "gdpPerCapita": "$76,000",
+    "population": "331 million",
+    "area": "9,833,520 km²",
+    "language": "English",
+    "currency": "USD"
+};
+
+// Small talk responses
+const smallTalk = [
+    "Hello! How's your day going?",
+    "I'm here and ready to answer geography questions.",
+    "Hi there! Ask me about any country.",
+    "Greetings! Curious about some country stats?"
 ];
 
-// Load countries JSON
-fetch('countries.json')
-  .then(res => res.json())
-  .then(data => { countriesDB = data; })
-  .catch(err => console.error("Failed to load countries.json", err));
-
-function detectIntent(text){
-  text = text.toLowerCase();
-  if(/country|countries|capital|city|landmark|mountain|river|continent|president|leader|gdp|population|currency|area|timezone|flag|climate|independence/.test(text)){
-    return "geography";
-  }
-  if(/hi|hello|hey|yo|hiya/.test(text) || /how are you|what's up|thanks|bye/.test(text)){
-    return "smallTalk";
-  }
-  return "unknown";
-}
-
-function nexusAI(text){
-  memory.push({user:text});
-  if(memory.length>100) memory.shift();
-  text = text.trim().toLowerCase();
-  const intent = detectIntent(text);
-
-  if(intent==="geography"){
-    for(const country in countriesDB){
-      if(text.includes(country.toLowerCase())){
-        const d = countriesDB[country];
-        return `${country} (${d.continent})\nCapital: ${d.capital}\nLandmark: ${d.landmark}\nLeader: ${d.leader}\nIndependence: ${d.independence}\nGDP per Capita: ${d.gdpPerCapita}\nPopulation: ${d.population}\nLanguage: ${d.language}\nCurrency: ${d.currency}\nArea: ${d.area}\nTimezone: ${d.timezone}\nClimate: ${d.climate}\nMain River: ${d.mainRiver}\nMain Mountain: ${d.mainMountain}\nHistory: ${d.history}\nEconomy: ${d.economy}\nFlag: ${d.flag}`;
-      }
+function parseQuestion(input) {
+    input = input.toLowerCase();
+    // detect country
+    let country = null;
+    for (let c in countries) {
+        if (input.includes(c.toLowerCase())) {
+            country = c;
+            break;
+        }
     }
-    return "I can provide info about countries. Please specify a country name.";
-  }
 
-  if(intent==="smallTalk"){
-    return smallTalkReplies[Math.floor(Math.random()*smallTalkReplies.length)];
-  }
+    // detect intent
+    if (!country) return "I don't understand";
+    
+    if (input.includes("when") && input.includes("independence")) {
+        return `${country} became independent on ${countries[country].independence}.`;
+    }
+    if (input.includes("capital")) {
+        return `${country}'s capital is ${countries[country].capital}.`;
+    }
+    if (input.includes("leader") || input.includes("president") || input.includes("prime minister")) {
+        return `The leader of ${country} is ${countries[country].leader}.`;
+    }
+    if (input.includes("gdp")) {
+        return `${country}'s GDP per capita is ${countries[country].gdpPerCapita}.`;
+    }
+    if (input.includes("population")) {
+        return `${country}'s population is ${countries[country].population}.`;
+    }
+    if (input.includes("area")) {
+        return `${country}'s area is ${countries[country].area}.`;
+    }
+    if (input.includes("language")) {
+        return `The main language of ${country} is ${countries[country].language}.`;
+    }
+    if (input.includes("currency")) {
+        return `${country}'s currency is ${countries[country].currency}.`;
+    }
 
-  return "I don't understand. Could you clarify your geography question?";
+    // fallback small talk
+    return smallTalk[Math.floor(Math.random() * smallTalk.length)];
 }
 
-function send(){
-  const container=document.getElementById("chatContainer");
-  const inputEl=document.getElementById("userInput");
-  const text=inputEl.value.trim();
-  if(!text) return;
+function send() {
+    const box = document.getElementById("terminal");
+    const input = document.getElementById("userInput");
+    const text = input.value.trim();
+    if (!text) return;
 
-  const userDiv=document.createElement("div");
-  userDiv.className="bubble userBubble";
-  userDiv.textContent=text;
-  container.appendChild(userDiv);
+    box.innerHTML += `\n\n[user] >> ${text}`;
+    const reply = parseQuestion(text);
+    box.innerHTML += `\n[nexus] >> ${reply}`;
+    box.scrollTop = box.scrollHeight;
 
-  const reply=nexusAI(text);
-  const nexusDiv=document.createElement("div");
-  nexusDiv.className="bubble nexusBubble";
-  nexusDiv.textContent=reply;
-  container.appendChild(nexusDiv);
-
-  container.scrollTop=container.scrollHeight;
-  inputEl.value="";
+    input.value = "";
 }
 </script>
 
